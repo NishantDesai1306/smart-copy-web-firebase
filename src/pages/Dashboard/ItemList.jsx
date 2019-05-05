@@ -19,6 +19,8 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 
+import { CopyToClipboard } from 'react-copy-to-clipboard';
+
 import withRoot from '../../withRoot';
 import getBackgroundColor from '../../utils/GetBackgroundColor';
 import getTextColor from '../../utils/GetTextColor';
@@ -35,6 +37,7 @@ class ItemList extends React.Component {
 		classes: PropTypes.object.isRequired,
 		filterText: PropTypes.string.isRequired,
 		onAction: PropTypes.func.isRequired,
+		onItemCopied: PropTypes.func.isRequired,
 	};
 
 	state = {
@@ -48,7 +51,7 @@ class ItemList extends React.Component {
 	};
 
   closeMenu = () => {
-		this.setState({
+  	this.setState({
   		selectedId: null,
   	});
   };
@@ -76,6 +79,7 @@ class ItemList extends React.Component {
 			items = [],
 			classes,
 			filterText,
+			onItemCopied,
 		} = this.props;
 		const {
 			selectedId,
@@ -106,21 +110,32 @@ class ItemList extends React.Component {
 								const firstChar = item.content.charAt(0).toUpperCase();
 								const background = getBackgroundColor(firstChar);
 								const color = getTextColor(background);
+								let contentText = item.content.substring(0, 350);
+
+								if (contentText.length < item.content.length) {
+									contentText += '...';
+								}
 
 								return (
-									<ListItem button key={item.id} className="py-3">
-										<ListItemAvatar>
-											<Avatar style={{ background, color }}>
-												{firstChar}
-											</Avatar>
-										</ListItemAvatar>
-										<ListItemText primary={item.content} />
-										<ListItemSecondaryAction>
-											<IconButton aria-label="options" id={item.id} onClick={this.openMenu}>
-												<Icon>more_vert</Icon>
-											</IconButton>
-										</ListItemSecondaryAction>
-									</ListItem>
+									<CopyToClipboard
+										key={item.id}
+										text={item.content}
+										onCopy={() => setTimeout(onItemCopied, 500)}
+									>
+										<ListItem button className="py-3">
+											<ListItemAvatar>
+												<Avatar style={{ background, color }}>
+													{firstChar}
+												</Avatar>
+											</ListItemAvatar>
+											<ListItemText primary={contentText} />
+											<ListItemSecondaryAction>
+												<IconButton aria-label="options" id={item.id} onClick={this.openMenu}>
+													<Icon>more_vert</Icon>
+												</IconButton>
+											</ListItemSecondaryAction>
+										</ListItem>
+									</CopyToClipboard>
 								);
 							})
 						}

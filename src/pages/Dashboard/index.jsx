@@ -34,12 +34,12 @@ class Dashboard extends React.Component {
 	static propTypes = {
 		classes: PropTypes.object.isRequired,
 		auth: PropTypes.object.isRequired,
-		dispatch: PropTypes.func.isRequired,
 		appBarSearchText: PropTypes.string.isRequired,
 		items: PropTypes.array,
 		addItem: PropTypes.func.isRequired,
 		editItem: PropTypes.func.isRequired,
 		deleteItem: PropTypes.func.isRequired,
+		createNotification: PropTypes.func.isRequired,
 	};
 
 	static defaultProps = {
@@ -51,6 +51,14 @@ class Dashboard extends React.Component {
 		itemId: '',
 		actionType: '',
 	};
+
+	onItemCopied = () => {
+		const {
+			createNotification,
+		} = this.props;
+
+		createNotification('Item copied to your clipboard');
+	}
 
 	toggleCreateItemModal = () => {
 		const {
@@ -91,7 +99,7 @@ class Dashboard extends React.Component {
 		const {
 			editItem,
 			items,
-			dispatch,
+			createNotification,
 		} = this.props;
 		const {
 			itemId,
@@ -110,7 +118,7 @@ class Dashboard extends React.Component {
 			});
 		}
 		else {
-			dispatch(showNotification('Item not found'));
+			createNotification('Item not found');
 		}
 	};
 
@@ -123,7 +131,7 @@ class Dashboard extends React.Component {
 
 	deleteItemModalSubmit = () => {
 		const {
-			dispatch,
+			createNotification,
 			items,
 			deleteItem,
 		} = this.props;
@@ -142,7 +150,7 @@ class Dashboard extends React.Component {
 			});
 		}
 		else {
-			dispatch(showNotification('Item not found'));
+			createNotification('Item not found');
 		}
 	};
 
@@ -180,6 +188,7 @@ class Dashboard extends React.Component {
 										onAction={this.performAction}
 										items={items}
 										filterText={appBarSearchText}
+										onItemCopied={this.onItemCopied}
 									/>
 								) : (
 									<div className="p-4 mt-4 d-flex justify-content-center align-items-center">
@@ -275,9 +284,13 @@ const mapStateToProps = (state) => {
 	return finalProps;
 };
 
+const mapDispatchToProps = (dispatch) => ({
+	createNotification: (message) => dispatch(showNotification(message)),
+});
+
 export default compose(
 	withFirestore,
-	connect(mapStateToProps),
+	connect(mapStateToProps, mapDispatchToProps),
 	firestoreConnect((props) => {
 		const {
 			auth,
@@ -294,7 +307,7 @@ export default compose(
 		addItem: (props) => (item) => {
 			const {
 				firestore,
-				dispatch,
+				createNotification,
 			} = props;
 
 			firestore.add(
@@ -302,7 +315,7 @@ export default compose(
 				item,
 			)
 				.then(() => {
-					dispatch(showNotification('Item Added'));
+					createNotification('Item Added');
 				})
 				.catch((err) => {
 					console.log(err);
@@ -311,7 +324,7 @@ export default compose(
 		editItem: (props) => (item) => {
 			const {
 				firestore,
-				dispatch,
+				createNotification,
 			} = props;
 
 			firestore.update({
@@ -322,7 +335,7 @@ export default compose(
 				updatedAt: new Date(),
 			})
 				.then(() => {
-					dispatch(showNotification('Item Updated'));
+					createNotification('Item Updated');
 				})
 				.catch((err) => {
 					console.log(err);
@@ -331,7 +344,7 @@ export default compose(
 		deleteItem: (props) => (itemId) => {
 			const {
 				firestore,
-				dispatch,
+				createNotification,
 			} = props;
 
 			firestore.delete({
@@ -339,7 +352,7 @@ export default compose(
 				doc: itemId,
 			})
 				.then(() => {
-					dispatch(showNotification('Item Deleted'));
+					createNotification('Item Deleted');
 				})
 				.catch((err) => {
 					console.log(err);

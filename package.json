@@ -17,6 +17,7 @@
     "query-string": "^6.5.0",
     "random-material-color": "^1.0.3",
     "react": "^16.8.6",
+    "react-copy-to-clipboard": "^5.0.1",
     "react-dom": "^16.8.6",
     "react-form": "^3.5.7",
     "react-redux": "^7.0.3",
