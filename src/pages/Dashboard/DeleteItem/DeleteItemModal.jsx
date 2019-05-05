@@ -31,13 +31,17 @@ const styles = () => createStyles({
 });
 
 class DeleteItemModal extends React.Component {
-	propTypes = {
+	static propTypes = {
 		classes: PropTypes.object.isRequired,
 		// item: PropTypes.string.isRequired,
 		onCancel: PropTypes.func.isRequired,
 		onSubmit: PropTypes.func.isRequired,
 		dispatch: PropTypes.func.isRequired,
-		content: PropTypes.string.isRequired,
+		content: PropTypes.string,
+	};
+
+	static defaultProps = {
+		content: '',
 	};
 
 	submit = () => {
