@@ -12,6 +12,8 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
 import Popper from '@material-ui/core/Popper';
 import Grow from '@material-ui/core/Grow';
 import Paper from '@material-ui/core/Paper';
@@ -223,12 +225,16 @@ class AppBarComponent extends React.Component {
 									<ClickAwayListener onClickAway={this.handleClose}>
 										<MenuList>
 											<MenuItem onClick={() => history.push('/dashboard/profile')}>
-												<Icon className="mr-2">account_circle</Icon>
-												Profile
+												<ListItemIcon>
+													<Icon>account_circle</Icon>
+												</ListItemIcon>
+												<ListItemText primary="Profile" />
 											</MenuItem>
 											<MenuItem onClick={this.logout}>
-												<Icon className="mr-2">exit_to_app</Icon>
-												Logout
+												<ListItemIcon>
+													<Icon>exit_to_app</Icon>
+												</ListItemIcon>
+												<ListItemText primary="Logout" />
 											</MenuItem>
 										</MenuList>
 									</ClickAwayListener>

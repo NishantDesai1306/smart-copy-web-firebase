@@ -25,8 +25,8 @@ import DeleteItemModal from './DeleteItem/DeleteItemModal';
 const styles = () => createStyles({
 	addButton: {
 		position: 'fixed',
-		right: 150,
-		bottom: 50,
+		right: '10vw',
+		bottom: '5vh',
 	},
 });
 
