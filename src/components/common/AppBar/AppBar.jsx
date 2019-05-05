@@ -70,6 +70,10 @@ const styles = (theme) => createStyles({
 		transition: theme.transitions.create('width'),
 		width: '100%',
 	},
+	appIcon: {
+		height: '40px',
+		width: '40px',
+	},
 });
 
 class AppBarComponent extends React.Component {
@@ -158,6 +162,11 @@ class AppBarComponent extends React.Component {
 						className={`flex-grow-1 ${hideSearchBar ? 'flex-md-grow-1' : 'flex-md-grow-0'} cursor-pointer`}
 						onClick={() => history.push('/dashboard')}
 					>
+						<img
+							className={`${classes.appIcon} mr-2`}
+							src="/icon.png"
+							alt="app_logo"
+						/>
 						Smart Copy
 					</Typography>
 
