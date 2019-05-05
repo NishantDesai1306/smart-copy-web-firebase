@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.js": "/smart-copy-web-firebase/static/js/main.ece34714.chunk.js",
+    "main.js.map": "/smart-copy-web-firebase/static/js/main.ece34714.chunk.js.map",
+    "runtime~main.js": "/smart-copy-web-firebase/static/js/runtime~main.f4bda059.js",
+    "runtime~main.js.map": "/smart-copy-web-firebase/static/js/runtime~main.f4bda059.js.map",
+    "static/js/2.0542ae16.chunk.js": "/smart-copy-web-firebase/static/js/2.0542ae16.chunk.js",
+    "static/js/2.0542ae16.chunk.js.map": "/smart-copy-web-firebase/static/js/2.0542ae16.chunk.js.map",
+    "index.html": "/smart-copy-web-firebase/index.html",
+    "precache-manifest.f66c81b1948cb082de690f139b07feb3.js": "/smart-copy-web-firebase/precache-manifest.f66c81b1948cb082de690f139b07feb3.js",
+    "service-worker.js": "/smart-copy-web-firebase/service-worker.js"
+  }
+}

@@ -1,0 +1,11 @@
+body {
+    height: 100vh;
+}
+
+*:focus {
+    outline: none !important;
+}
+
+.cursor-pointer {
+    cursor: pointer !important;
+}
