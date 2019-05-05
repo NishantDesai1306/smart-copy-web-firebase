@@ -75,7 +75,7 @@ class LoginPage extends React.Component {
 		return (
 			<div className="login-container container flex-grow-1 d-flex flex-column justify-content-center">
 				<div className="row mb-3 justify-content-center">
-					<Card className="col-5 px-3 w-100">
+					<Card className="col-10 col-md-5 px-3 w-100">
 						<CardContent>
 							<Typography
 								gutterBottom
@@ -109,7 +109,7 @@ class LoginPage extends React.Component {
 				</div>
 
 				<div className="row">
-					<div className="col-4 offset-4">
+					<div className="col-12 col-md-4 offset-md-4">
 						<div className="row">
 							<div className="col-12 text-center">
 								<Link component={(props) => <RouterLink to="/login" {...props} />}>

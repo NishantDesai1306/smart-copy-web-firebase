@@ -138,7 +138,7 @@ class ChangePasswordPage extends React.Component {
 		return (
 			<div className="profile-container container flex-grow-1 d-flex flex-column justify-content-center">
 				<div className="row mb-3 justify-content-center">
-					<Card className="col-5 px-3 w-100">
+					<Card className="col-10 col-md-5 px-3 w-100">
 						<CardContent>
 							<Typography
 								gutterBottom

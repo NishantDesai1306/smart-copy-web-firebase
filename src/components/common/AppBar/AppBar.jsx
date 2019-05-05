@@ -153,7 +153,7 @@ class AppBarComponent extends React.Component {
 					<Typography
 						variant="h6"
 						color="inherit"
-						className={`${hideSearchBar ? 'flex-grow-1' : ''} cursor-pointer`}
+						className={`flex-grow-1 ${hideSearchBar ? 'flex-md-grow-1' : 'flex-md-grow-0'} cursor-pointer`}
 						onClick={() => history.push('/dashboard')}
 					>
 						Smart Copy
@@ -161,7 +161,7 @@ class AppBarComponent extends React.Component {
 
 					{
 						!hideSearchBar && (
-							<div className="flex-grow-1 d-flex justify-content-center">
+							<div className="flex-grow-1 d-none d-md-flex justify-content-center">
 								<div className="col-8 col-md-6">
 									<div className={classes.search}>
 										<div className={classes.searchIcon}>
