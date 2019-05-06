@@ -208,7 +208,6 @@ class ChangePasswordPage extends React.Component {
 		} = this.state;
 
 		const hasPasswordProvider = registeredProviders.includes('password');
-		debugger;
 
 		return (
 			<div className="profile-container container flex-grow-1 d-flex flex-column justify-content-center">
