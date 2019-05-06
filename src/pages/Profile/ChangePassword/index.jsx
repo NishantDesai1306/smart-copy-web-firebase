@@ -2,7 +2,7 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 
 import { compose } from 'redux';
-import { withFirebase } from 'react-redux-firebase';
+import { withFirebase, actionTypes } from 'react-redux-firebase';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 
@@ -22,16 +22,23 @@ import Alert from '../../../components/common/Alert';
 import ChangePasswordForm from './ChangePasswordForm';
 import { showNotification } from '../../../actions/notification';
 
-const ChangePasswordSchema = Yup.object().shape({
-	currentPassword: Yup.string()
-		.required('Required'),
-	newPassword: Yup.string()
-		.min(6, 'New Password must be 6 characters long')
-		.required('Required'),
-	confirmNewPassword: Yup.string()
-		.min(6, 'New Password must be 6 characters long')
-		.required('Required'),
-});
+const getChangePasswordFormSchema = (isCurrentPasswordRequired) => {
+	const schema = {
+		newPassword: Yup.string()
+			.min(6, 'New Password must be 6 characters long')
+			.required('Required'),
+		confirmNewPassword: Yup.string()
+			.min(6, 'New Password must be 6 characters long')
+			.required('Required'),
+	};
+
+	if (isCurrentPasswordRequired) {
+		schema.currentPassword = Yup.string()
+			.required('Required');
+	}
+
+	return Yup.object().shape(schema);
+};
 
 const styles = () => createStyles({
 	cardTitle: {
@@ -41,14 +48,39 @@ const styles = () => createStyles({
 
 class ChangePasswordPage extends React.Component {
 	static propTypes = {
+		dispatch: PropTypes.func.isRequired,
 		firebase: PropTypes.any.isRequired,
+		auth: PropTypes.object.isRequired,
 		createNotification: PropTypes.func.isRequired,
 		classes: PropTypes.object.isRequired,
 	};
 
 	state = {
 		error: '',
+		registeredProviders: [],
 	};
+
+	componentWillMount() {
+		const {
+			auth,
+		} = this.props;
+
+		this.setRegisteredProviders(auth);
+	}
+
+	componentWillReceiveProps(nextProps) {
+		this.setRegisteredProviders(nextProps.auth);
+	}
+
+	setRegisteredProviders = (auth) => {
+		if (auth) {
+			const registeredProviders = auth.providerData.map(({ providerId }) => providerId);
+
+			this.setState({
+				registeredProviders,
+			});
+		}
+	}
 
 	validate = (formData) => {
 		const {
@@ -64,46 +96,85 @@ class ChangePasswordPage extends React.Component {
 		return errors;
 	};
 
-	reAuthenticate = (currentPassword) => {
+	reAuthenticate = async (currentPassword) => {
 		const {
 			firebase,
 		} = this.props;
-
+		const {
+			registeredProviders,
+		} = this.state;
 		const user = firebase.auth().currentUser;
-		const cred = firebase.auth.EmailAuthProvider.credential(user.email, currentPassword);
-		return user.reauthenticateWithCredential(cred);
+		const hasPasswordProvider = registeredProviders.includes('password');
+		let cred = null;
+
+		if (hasPasswordProvider) {
+			cred = firebase.auth.EmailAuthProvider.credential(user.email, currentPassword);
+		}
+		else if (registeredProviders.includes('google.com')) {
+			const googleUser = window.gapi.auth2.getAuthInstance().currentUser.get();
+			const isSignedIn = window.gapi.auth2.getAuthInstance().isSignedIn.get();
+
+			if (isSignedIn) {
+				const idToken = googleUser.getAuthResponse().id_token;
+				cred = firebase.auth.GoogleAuthProvider.credential(idToken);
+			}
+		}
+
+		if (!cred) {
+			const error = new Error('could not setup credentials for reauthentication');
+			return Promise.reject(error);
+		}
+
+		return user.reauthenticateAndRetrieveDataWithCredential(cred);
 	}
 
 	submit = (formData, actions) => {
 		const {
 			firebase,
 			createNotification,
+			dispatch,
 		} = this.props;
+		const {
+			registeredProviders,
+		} = this.state;
 		const {
 			currentPassword,
 			newPassword,
 		} = formData;
+		const hasPasswordProvider = registeredProviders.includes('password');
+		const user = firebase.auth().currentUser;
 
 		this.reAuthenticate(currentPassword)
 			.then(() => {
-				const user = firebase.auth().currentUser;
+				// if user does not have password provider we cannot update password directly
+				if (hasPasswordProvider) {
+					return user.updatePassword(newPassword);
+				}
 
-				user.updatePassword(newPassword)
-					.then(() => {
-						createNotification('Password changed successfully');
-					})
-					.catch((error) => {
-						const {
-							// code,
-							message,
-						} = error;
+				// else we will have to create credential obj based on user's email and new password and link it
+				// to logged in user's account
+				const passwordCredentials = firebase.auth.EmailAuthProvider.credential(user.email, newPassword);
 
-						this.setState({
-							error: message,
-						});
+				return user.linkAndRetrieveDataWithCredential(passwordCredentials);
+			})
+			.then(() => {
+				// notify react-redux-firebase about the change
+				// it could be the case that user has signed up via google or facebook and then he/she wants to
+				// link password to the account and in that case the auth stored in redux needs to get updated because it
+				// will have old info regarding the like of providers that the account has
+				const authJSON = firebase.auth().toJSON();
+				const newUser = Object.assign({}, authJSON.currentUser);
 
-						createNotification('Error occurred while changing password');
-					});
+				delete authJSON.currentUser;
+
+				const newAuth = Object.assign({}, authJSON, newUser);
+
+				dispatch({
+					type: actionTypes.AUTH_UPDATE_SUCCESS,
+					auth: newAuth,
+				});
+
+				createNotification('Password changed successfully');
 			})
 			.catch((error) => {
 				const {
@@ -133,7 +204,11 @@ class ChangePasswordPage extends React.Component {
 		} = this.props;
 		const {
 			error,
+			registeredProviders = [],
 		} = this.state;
+
+		const hasPasswordProvider = registeredProviders.includes('password');
+		debugger;
 
 		return (
 			<div className="profile-container container flex-grow-1 d-flex flex-column justify-content-center">
@@ -151,8 +226,10 @@ class ChangePasswordPage extends React.Component {
 
 							<div className="mb-2">
 								<Formik
+									enableReinitialize
+									initialValues={{ showCurrentPassword: hasPasswordProvider }}
 									validate={this.validate}
-									validationSchema={ChangePasswordSchema}
+									validationSchema={getChangePasswordFormSchema(hasPasswordProvider)}
 									onSubmit={this.submit}
 									component={ChangePasswordForm}
 								/>
@@ -184,6 +261,7 @@ const mapDispatchToProps = (dispatch) => ({
 });
 const mapStateToProps = (state) => ({
 	profile: state.firebase.profile,
+	auth: state.firebase.auth,
 });
 
 export default compose(

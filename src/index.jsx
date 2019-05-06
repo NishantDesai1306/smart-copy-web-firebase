@@ -19,13 +19,18 @@ const rrfConfig = {
 	firebaseStateName: 'firebase',
 	profileFactory: (userData, profileData) => {
 		console.log('up', userData, profileData);
-		const { username, email } = profileData;
+		const {
+			username,
+			email,
+			displayName,
+			avatarUrl,
+		} = profileData;
+		const defaultProfilePicture = `${PROFILE_PICTURE_PATH}${DUMMY_PROFILE_PICTURE}?alt=media`;
 
 		return {
 			email,
-			username,
-			profilePicture: `${PROFILE_PICTURE_PATH}${DUMMY_PROFILE_PICTURE}?alt=media`,
-			testing: 'abcd',
+			username: username || displayName,
+			profilePicture: avatarUrl || defaultProfilePicture,
 		};
 	},
 	useFirestoreForProfile: true,

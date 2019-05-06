@@ -11,22 +11,27 @@ const ChangePasswordForm = (props) => {
 	const {
 		errors,
 		isSubmitting,
+		values,
 	} = props;
 
 	const formHasError = Object.keys(errors).length > 0;
 
 	return (
 		<Form>
-			<div>
-				<Field
-					name="currentPassword"
-					component={InputField}
-					type="password"
-					icon="lock"
-					label="Current Password"
-					containerClasses="mb-3 pt-2"
-				/>
-			</div>
+			{
+				values.showCurrentPassword && (
+					<div>
+						<Field
+							name="currentPassword"
+							component={InputField}
+							type="password"
+							icon="lock"
+							label="Current Password"
+							containerClasses="mb-3 pt-2"
+						/>
+					</div>
+				)
+			}
 
 			<div>
 				<Field
@@ -75,6 +80,7 @@ const ChangePasswordForm = (props) => {
 ChangePasswordForm.propTypes = {
 	errors: PropTypes.object.isRequired,
 	isSubmitting: PropTypes.bool.isRequired,
+	values: PropTypes.object.isRequired,
 };
 
 export default ChangePasswordForm;

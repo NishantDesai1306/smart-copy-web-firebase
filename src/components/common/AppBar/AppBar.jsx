@@ -6,6 +6,9 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 
 import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
+import Badge from '@material-ui/core/Badge';
 import Avatar from '@material-ui/core/Avatar';
 import Typography from '@material-ui/core/Typography';
 import AppBar from '@material-ui/core/AppBar';
@@ -28,6 +31,7 @@ import ButtonBase from '@material-ui/core/ButtonBase';
 
 import withRoot from '../../../withRoot';
 import AppBarActionCreators from '../../../actions/appBar';
+import { showNotification } from '../../../actions/notification';
 
 const styles = (theme) => createStyles({
 	profileAvatar: {
@@ -74,6 +78,9 @@ const styles = (theme) => createStyles({
 		height: '40px',
 		width: '40px',
 	},
+	emailIcon: {
+		color: 'white',
+	},
 });
 
 class AppBarComponent extends React.Component {
@@ -86,6 +93,7 @@ class AppBarComponent extends React.Component {
 		appBarSearchText: PropTypes.string.isRequired,
 		classes: PropTypes.object.isRequired,
 		history: PropTypes.object.isRequired,
+		createNotification: PropTypes.func.isRequired,
 	};
 
 	static defaultProps = {
@@ -139,12 +147,24 @@ class AppBarComponent extends React.Component {
 		});
 	}
 
+	sendVerificationEmail = () => {
+		const {
+			firebase,
+			createNotification,
+		} = this.props;
+		const { currentUser } = firebase.auth();
+
+		if (!currentUser.emailVerified) {
+			currentUser.sendEmailVerification();
+			createNotification('Verification e-mail sent successfully, please check you inbox');
+		}
+	}
+
 	render() {
 		const {
 			classes,
-			// auth,
+			auth,
 			profile,
-			// firebase,
 			appBarSearchText,
 			history,
 			hideSearchBar,
@@ -159,13 +179,13 @@ class AppBarComponent extends React.Component {
 					<Typography
 						variant="h6"
 						color="inherit"
-						className={`flex-grow-1 ${hideSearchBar ? 'flex-md-grow-1' : 'flex-md-grow-0'} cursor-pointer`}
-						onClick={() => history.push('/dashboard')}
+						className={`flex-grow-1 ${hideSearchBar ? 'flex-md-grow-1' : 'flex-md-grow-0'} d-flex align-items-center`}
 					>
-						<img
-							className={`${classes.appIcon} mr-2`}
+						<Avatar
+							className={`${classes.appIcon} mr-2 cursor-pointer`}
 							src="/icon.png"
 							alt="app_logo"
+							onClick={() => history.push('/dashboard')}
 						/>
 						Smart Copy
 					</Typography>
@@ -206,6 +226,18 @@ class AppBarComponent extends React.Component {
 									</div>
 								</div>
 							</div>
+						)
+					}
+
+					{
+						!auth.emailVerified && (
+							<Tooltip title="Verify your email" aria-label="Add">
+								<IconButton className="mx-2" onClick={this.sendVerificationEmail}>
+									<Badge className="badge" variant="dot" color="error">
+										<Icon className={`${classes.emailIcon}`} color="inherit">email</Icon>
+									</Badge>
+								</IconButton>
+							</Tooltip>
 						)
 					}
 
@@ -265,12 +297,13 @@ const mapDispatchToProps = (dispatch) => ({
 		{ ...AppBarActionCreators },
 		dispatch,
 	),
+	createNotification: (message) => dispatch(showNotification(message)),
 });
 
 const mapStateToProps = (state) => ({
 	appBarSearchText: state.appBar.searchForm.searchText || '',
-	auth: state.firebase.auth,
 	profile: state.firebase.profile,
+	auth: state.firebase.auth,
 });
 
 export default compose(

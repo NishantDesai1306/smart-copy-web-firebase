@@ -12,11 +12,28 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
     <title>Smart Copy</title>
+    <meta name="google-signin-client_id" content="961123670467-gse4d9ictagcosgmj8cb8armm2atoek3.apps.googleusercontent.com">
   </head>
   <body class="d-flex flex-column">
     <noscript>
       You need to enable JavaScript to run this app.
     </noscript>
     <div id="root" class="flex-grow-1 d-flex flex-column"></div>
+
+
+    <!--
+      added google API for case when I want to add password provider to existing account created through
+      google firebase integration, for linking providers firebase needs user to reauthenticate one moment
+      before new provider is added so to reauthenticate logged in user created by google firebase integration
+      we need idToken of google oauth sdk
+     -->
+    <script>
+      function onLoad() {
+        gapi.load('auth2', function () {
+          gapi.auth2.init();
+        });
+      }
+    </script>
+    <script src="https://apis.google.com/js/platform.js?onload=onLoad" async defer></script>
   </body>
 </html>
