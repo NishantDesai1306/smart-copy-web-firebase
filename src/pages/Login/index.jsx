@@ -1,7 +1,7 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import { compose } from 'redux';
-import { withFirebase } from 'react-redux-firebase';
+import { withFirebase, actionTypes } from 'react-redux-firebase';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
@@ -55,6 +55,7 @@ const styles = () => createStyles({
 
 class LoginPage extends React.Component {
 	static propTypes = {
+		dispatch: PropTypes.func.isRequired,
 		firebase: PropTypes.object.isRequired,
 		classes: PropTypes.object.isRequired,
 		auth: PropTypes.object.isRequired,
@@ -85,6 +86,7 @@ class LoginPage extends React.Component {
 					code,
 					message,
 				} = err;
+
 				const errorMessage = {
 					'auth/user-not-found': 'User not found',
 				};
@@ -97,6 +99,90 @@ class LoginPage extends React.Component {
 				actions.setSubmitting(false);
 			});
 	};
+
+	handleLoginThroughFacebook = () => {
+		const {
+			firebase,
+			dispatch,
+		} = this.props;
+
+		this.setState({
+			error: '',
+		});
+
+		firebase.login({ provider: 'facebook', type: 'popup' })
+			.then(() => Promise.resolve())
+			.catch(async (err) => {
+				const {
+					code,
+					email,
+					credential: fbCredentials,
+				} = err;
+
+				// in case fb login fails and if we get this error
+				// usually this error happens if user is registered through google or registered account manually (don't know why this happens)
+				// then we will have to first login through google or password and then link the fb profile to firebase user
+				if (code === 'auth/account-exists-with-different-credential') {
+					const methods = await firebase.auth().fetchSignInMethodsForEmail(email);
+					const hasPasswordProvider = methods.includes('password');
+					const hasGoogleProvider = methods.includes('google.com');
+
+					try {
+						// try google first because that's more easy for user
+						if (hasGoogleProvider) {
+							console.log('trying with google login');
+							await firebase.login({ provider: 'google', type: 'popup' });
+
+							console.log('google login success');
+
+							return Promise.resolve(fbCredentials);
+						}
+					}
+					catch (e) {
+						if (hasPasswordProvider) {
+							// ask for password and login through password and then resolve fbCredentials
+						}
+					}
+
+					const loginError = new Error('Something went wrong, please try some other login method');
+					return Promise.reject(loginError);
+				}
+
+				return Promise.reject(err);
+			})
+			.then(async (fbCredentials) => {
+				// if fbCredential is null then it means that user successfully logged in through fb
+				// so no need to do anything in that case
+				if (fbCredentials) {
+					const user = firebase.auth().currentUser;
+
+					if (user) {
+						await user.linkAndRetrieveDataWithCredential(fbCredentials);
+					}
+
+					const authJSON = firebase.auth().toJSON();
+					const newUser = Object.assign({}, authJSON.currentUser);
+
+					delete authJSON.currentUser;
+
+					const newAuth = Object.assign({}, authJSON, newUser);
+
+					dispatch({
+						type: actionTypes.AUTH_UPDATE_SUCCESS,
+						auth: newAuth,
+					});
+				}
+			})
+			.catch((err) => {
+				const {
+					message,
+				} = err;
+
+				this.setState({
+					error: message,
+				});
+			});
+	}
 
 	render() {
 		const {
@@ -162,7 +248,7 @@ class LoginPage extends React.Component {
 								variant="contained"
 								className={`w-100 mb-2 ${classes.facebookButton}`}
 								disabled={!auth.isLoaded}
-								onClick={() => firebase.login({ provider: 'facebook', type: 'popup' })}
+								onClick={() => this.handleLoginThroughFacebook()}
 							>
 								<Icon className={classNames('fab fa-facebook mr-2')} />
 								<span>

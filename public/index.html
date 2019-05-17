@@ -15,12 +15,6 @@
     <meta name="google-signin-client_id" content="961123670467-gse4d9ictagcosgmj8cb8armm2atoek3.apps.googleusercontent.com">
   </head>
   <body class="d-flex flex-column">
-    <noscript>
-      You need to enable JavaScript to run this app.
-    </noscript>
-    <div id="root" class="flex-grow-1 d-flex flex-column"></div>
-
-
     <!--
       added google API for case when I want to add password provider to existing account created through
       google firebase integration, for linking providers firebase needs user to reauthenticate one moment
@@ -35,5 +29,25 @@
       }
     </script>
     <script src="https://apis.google.com/js/platform.js?onload=onLoad" async defer></script>
+
+    <!-- added for same reason why I added google auth sdk -->
+    <script>
+      window.fbAsyncInit = function () {
+        FB.init({
+          appId: '1160752057371490',
+          autoLogAppEvents: true,
+          xfbml: true,
+          version: 'v3.3'
+        });
+      };
+    </script>
+    <script async defer src="https://connect.facebook.net/en_US/sdk.js"></script>
+
+    <noscript>
+      You need to enable JavaScript to run this app.
+    </noscript>
+    <div id="root" class="flex-grow-1 d-flex flex-column"></div>
+
+
   </body>
 </html>

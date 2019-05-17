@@ -74,6 +74,7 @@ class ChangePasswordPage extends React.Component {
 
 	setRegisteredProviders = (auth) => {
 		if (auth) {
+			console.log('auth', auth);
 			const registeredProviders = auth.providerData.map(({ providerId }) => providerId);
 
 			this.setState({
@@ -95,6 +96,29 @@ class ChangePasswordPage extends React.Component {
 
 		return errors;
 	};
+
+	getFBAccessToken = () => new Promise((resolve, reject) => {
+		const token = window.FB.getAccessToken();
+
+		if (token) {
+			return resolve(token);
+		}
+
+		window.FB.login((response) => {
+			const {
+				status,
+				authResponse,
+			} = response;
+
+			if (status === 'connected') {
+				resolve(authResponse.accessToken);
+			}
+			else {
+				const error = new Error('Please completed the Facebook login process to proceed');
+				return reject(error);
+			}
+		});
+	});
 
 	reAuthenticate = async (currentPassword) => {
 		const {
@@ -119,9 +143,13 @@ class ChangePasswordPage extends React.Component {
 				cred = firebase.auth.GoogleAuthProvider.credential(idToken);
 			}
 		}
+		else if (registeredProviders.includes('facebook.com')) {
+			const fbAccessToken = await this.getFBAccessToken();
+			cred = firebase.auth.FacebookAuthProvider.credential(fbAccessToken);
+		}
 
 		if (!cred) {
-			const error = new Error('could not setup credentials for reauthentication');
+			const error = new Error('Could not setup credentials for reauthentication');
 			return Promise.reject(error);
 		}
 
