@@ -104,19 +104,18 @@ class ChangePasswordPage extends React.Component {
 			return resolve(token);
 		}
 
-		window.FB.login((response) => {
+		return window.FB.login((response) => {
 			const {
 				status,
 				authResponse,
 			} = response;
 
 			if (status === 'connected') {
-				resolve(authResponse.accessToken);
+				return resolve(authResponse.accessToken);
 			}
-			else {
-				const error = new Error('Please completed the Facebook login process to proceed');
-				return reject(error);
-			}
+
+			const error = new Error('Please completed the Facebook login process to proceed');
+			return reject(error);
 		});
 	});
 
