@@ -38,6 +38,7 @@ class ItemList extends React.Component {
 		filterText: PropTypes.string.isRequired,
 		onAction: PropTypes.func.isRequired,
 		onItemCopied: PropTypes.func.isRequired,
+		onToggleStarStatus: PropTypes.func.isRequired,
 	};
 
 	state = {
@@ -51,9 +52,9 @@ class ItemList extends React.Component {
 	};
 
   closeMenu = () => {
-  	this.setState({
-  		selectedId: null,
-  	});
+		this.setState({
+			selectedId: null,
+		});
   };
 
 	performAction = (actionType) => {
@@ -72,6 +73,19 @@ class ItemList extends React.Component {
 		this.setState({
 			selectedId: null,
 		});
+	}
+
+	toggleStarStatus = (e, itemId) => {
+		debugger;
+		const {
+			onToggleStarStatus,
+		} = this.props;
+
+		// const { nativeEvent } = e;
+		e.preventDefault();
+		e.stopPropagation();
+
+		onToggleStarStatus(itemId);
 	}
 
 	render() {
@@ -123,6 +137,18 @@ class ItemList extends React.Component {
 										onCopy={() => setTimeout(onItemCopied, 500)}
 									>
 										<ListItem button className="py-3">
+											<ListItemIcon>
+												<IconButton onClick={(e) => this.toggleStarStatus(e, item.id) }>
+													<Icon
+														color={item.isStarred ? 'primary' : 'inherit'}
+														classes={{
+															colorPrimary: 'gold-star'
+														}}
+													>
+														star
+													</Icon>
+												</IconButton>
+											</ListItemIcon>
 											<ListItemAvatar>
 												<Avatar style={{ background, color }}>
 													{firstChar}

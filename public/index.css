@@ -96,3 +96,11 @@ body {
         transform: rotate(450deg);
     }
 }
+
+.gold-star {
+    color: #ffce3a !important;
+}
+
+.strong {
+    font-weight: bold !important;
+}

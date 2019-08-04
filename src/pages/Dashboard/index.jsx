@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 import Fab from '@material-ui/core/Fab';
 import Icon from '@material-ui/core/Icon';
 import Tooltip from '@material-ui/core/Tooltip';
+import Switch from '@material-ui/core/Switch';
 
 import createStyles from '@material-ui/core/styles/createStyles';
 import withStyles from '@material-ui/core/styles/withStyles';
@@ -39,6 +40,7 @@ class Dashboard extends React.Component {
 		addItem: PropTypes.func.isRequired,
 		editItem: PropTypes.func.isRequired,
 		deleteItem: PropTypes.func.isRequired,
+		toggleStarStatus: PropTypes.func.isRequired,
 		createNotification: PropTypes.func.isRequired,
 	};
 
@@ -47,10 +49,21 @@ class Dashboard extends React.Component {
 	};
 
 	state = {
+		showOnlyStarred: false,
 		addItemModal: false,
 		itemId: '',
 		actionType: '',
 	};
+
+	toggleOnlyStarred = () => {
+		const {
+			showOnlyStarred,
+		} = this.state;
+
+		this.setState({
+			showOnlyStarred: !showOnlyStarred,
+		});
+	}
 
 	onItemCopied = () => {
 		const {
@@ -87,6 +100,23 @@ class Dashboard extends React.Component {
 			addItemModal: false,
 		});
 	};
+
+	toggleStarStatus = (itemId) => {
+		const {
+			toggleStarStatus,
+			items,
+			createNotification,
+		} = this.props;
+
+		const item = items.find(({ id }) => id === itemId);
+
+		if (item) {
+			toggleStarStatus(item);
+		}
+		else {
+			createNotification('Item not found');
+		}
+	}
 
 	performAction = ({ itemId, actionType }) => {
 		this.setState({
@@ -170,10 +200,13 @@ class Dashboard extends React.Component {
 			appBarSearchText,
 		} = this.props;
 		const {
+			showOnlyStarred,
 			addItemModal,
 			itemId,
 			actionType,
 		} = this.state;
+
+		const itemList = items.filter(({ isStarred }) => !showOnlyStarred || isStarred);
 
 		return (
 			<div className="homepage-container flex-grow-1 d-flex flex-column">
@@ -181,14 +214,44 @@ class Dashboard extends React.Component {
 
 				<div className="container">
 					<div className="row">
+						<div className="col-12 col-sm-4 offset-sm-4 text-center p-4">
+							<h3 className="m-0">Items</h3>
+						</div>
+						<div className="col-12 col-sm-4 d-flex align-items-center justify-content-center">
+							<div className="d-flex align-items-center justify-content-center">
+								<div className={showOnlyStarred ? 'text-muted' : 'strong'}>
+									<span>All</span>
+								</div>
+								<div>
+									<Switch
+										onChange={this.toggleOnlyStarred}
+										checked={showOnlyStarred}
+									/>
+								</div>
+								<div className={`d-flex align-items-center ${showOnlyStarred ? 'strong' : 'text-muted'}`}>
+									<span className="mr-1">Only</span>
+									<Icon
+										color={showOnlyStarred ? 'primary' : 'inherit'}
+										classes={{
+											colorPrimary: 'gold-star',
+										}}
+									>
+										star
+									</Icon>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div className="row">
 						<div className="col-12">
 							{
 								items ? (
 									<ItemList
 										onAction={this.performAction}
-										items={items}
+										items={itemList}
 										filterText={appBarSearchText}
 										onItemCopied={this.onItemCopied}
+										onToggleStarStatus={this.toggleStarStatus}
 									/>
 								) : (
 									<div className="p-4 mt-4 d-flex justify-content-center align-items-center">
@@ -271,6 +334,7 @@ const mapStateToProps = (state) => {
 					id: itemIds[index],
 					owner: itemDoc.owner,
 					content: itemDoc.content,
+					isStarred: itemDoc.isStarred,
 					createdAt: itemDoc.createdAt.toDate(),
 					updatedAt: itemDoc.updatedAt.toDate(),
 				};
@@ -358,5 +422,25 @@ export default compose(
 					console.log(err);
 				});
 		},
+		toggleStarStatus: (props) => (item) => {
+			const {
+				firestore,
+				createNotification,
+			} = props;
+
+			firestore.update({
+				collection: 'items',
+				doc: item.id,
+			}, {
+				isStarred: !item.isStarred,
+				updatedAt: new Date(),
+			})
+				.then(() => {
+					createNotification(`Item ${item.isStarred ? 'Unstarred' : 'Starred'}`);
+				})
+				.catch((err) => {
+					console.log(err);
+				});
+		}
 	}),
 )(MaterializedDashboard);
