@@ -9,9 +9,6 @@ import { createFirestoreInstance } from 'redux-firestore';
 import Routes from './pages/routes';
 import store from './store/index';
 import { DUMMY_PROFILE_PICTURE, PROFILE_PICTURE_PATH } from './constants/index';
-import { register } from './serviceWorker';
-
-register();
 
 const rrfConfig = {
 	userProfile: 'users',

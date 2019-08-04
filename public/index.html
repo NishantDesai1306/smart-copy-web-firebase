@@ -75,5 +75,40 @@
         </svg>
       </div>
     </div>
+
+    <script>
+      var isProduction = ('%NODE_ENV%' === 'production');
+      var queue = [];
+
+      if (isProduction && 'serviceWorker' in navigator) {
+        
+        navigator.serviceWorker.getRegistrations()
+        .then(function (registeredServiceWorkers) {
+          var channel = new BroadcastChannel('service-worker-channel');
+          var hasRegisteredServiceWorker = !!registeredServiceWorkers.length;
+          
+          navigator.serviceWorker.register('sw.js')
+          .then(function () {
+            channel.onmessage = (message) => {
+              // if service worker has registered for the first time then don't show update confirm
+              if (hasRegisteredServiceWorker && message.data.promptReload) {
+                if (confirm('Updates are available, Would you like to reload?')) {
+                  channel.postMessage({
+                    skipWaiting: true
+                  });
+                }
+              }
+            }
+
+            navigator.serviceWorker.addEventListener('controllerchange', function() {
+              window.location.reload();
+            });        
+          })
+          .catch(function (err) {
+            console.log(err);
+          });
+        });
+      }
+    </script>
   </body>
 </html>

@@ -92,16 +92,22 @@ class AccountPage extends React.Component {
 		const {
 			firebase,
 			createNotification,
+			profile,
 		} = this.props;
 
 		if (event && event.target && event.target.files && event.target.files.length) {
 			const file = event.target.files[0];
+			const extension = file.name.split('.').pop();
+			const newFileName = `${profile.username}.${extension}`;
+			const newFile = new File([file], newFileName, {
+				type: file.type,
+			});
 
 			this.setState({
 				isUploading: true,
 			});
 
-			firebase.uploadFile('profile pictures', file)
+			firebase.uploadFile('profile pictures', newFile)
 				.then((data) => {
 					const {
 						uploadTaskSnapshot: {
