@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#2457ff" />
+    <meta
+      name="description"
+      content="Smart Copy keeps the text you reuse ready to find and copy."
+    />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/pwa-192x192.png" />
+    <title>Smart Copy</title>
+    <script>
+      try {
+        var mode = localStorage.getItem('smart-copy:theme-mode');
+        if (mode !== 'dark') mode = 'light';
+        document.documentElement.dataset.theme = mode;
+        document.documentElement.style.colorScheme = mode;
+        if (mode === 'dark') {
+          document.documentElement.style.background = '#0c1220';
+          document.querySelector('meta[name="theme-color"]').content =
+            '#0c1220';
+        }
+      } catch (error) {
+        document.documentElement.dataset.theme = 'light';
+      }
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to Content</a>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

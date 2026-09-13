@@ -1,0 +1,73 @@
+@import '@fontsource-variable/manrope';
+@import '@fontsource-variable/roboto-mono';
+
+:root,
+[data-theme='light'] {
+  color: #101828;
+  background: #f6f8fc;
+  color-scheme: light;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+[data-theme='dark'] {
+  color: #e8eef8;
+  background: #0c1220;
+  color-scheme: dark;
+}
+
+html {
+  min-width: 320px;
+  min-height: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  overflow-x: hidden;
+}
+
+button,
+a,
+input,
+textarea {
+  touch-action: manipulation;
+}
+
+*:focus-visible {
+  outline: 3px solid #00a6a6;
+  outline-offset: 3px;
+}
+
+.skip-link {
+  position: fixed;
+  z-index: 2000;
+  top: 12px;
+  left: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  color: #ffffff;
+  background: #101828;
+  transform: translateY(-180%);
+  transition: transform 150ms ease;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

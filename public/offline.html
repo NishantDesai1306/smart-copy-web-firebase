@@ -1,47 +1,85 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no">
-	<link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-		integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" />
-	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
-		integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
-
-	<link rel="apple-touch-icon" sizes="57x57" href="%PUBLIC_URL%/apple-icon-57x57.png">
-	<link rel="apple-touch-icon" sizes="60x60" href="%PUBLIC_URL%/apple-icon-60x60.png">
-	<link rel="apple-touch-icon" sizes="72x72" href="%PUBLIC_URL%/apple-icon-72x72.png">
-	<link rel="apple-touch-icon" sizes="76x76" href="%PUBLIC_URL%/apple-icon-76x76.png">
-	<link rel="apple-touch-icon" sizes="114x114" href="%PUBLIC_URL%/apple-icon-114x114.png">
-	<link rel="apple-touch-icon" sizes="120x120" href="%PUBLIC_URL%/apple-icon-120x120.png">
-	<link rel="apple-touch-icon" sizes="144x144" href="%PUBLIC_URL%/apple-icon-144x144.png">
-	<link rel="apple-touch-icon" sizes="152x152" href="%PUBLIC_URL%/apple-icon-152x152.png">
-	<link rel="apple-touch-icon" sizes="180x180" href="%PUBLIC_URL%/apple-icon-180x180.png">
-	<link rel="icon" type="image/png" sizes="192x192" href="%PUBLIC_URL%/android-icon-192x192.png">
-	<link rel="icon" type="image/png" sizes="32x32" href="%PUBLIC_URL%/favicon-32x32.png">
-	<link rel="icon" type="image/png" sizes="96x96" href="%PUBLIC_URL%/favicon-96x96.png">
-	<link rel="icon" type="image/png" sizes="16x16" href="%PUBLIC_URL%/favicon-16x16.png">
-	<link rel="manifest" href="%PUBLIC_URL%/manifest.json">
-	<meta name="msapplication-TileColor" content="#3f51b5">
-	<meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
-	<meta name="theme-color" content="#3f51b5">
-
-	<!-- Tell the browser it's a PWA -->
-	<meta name="mobile-web-app-capable" content="yes">
-	<!-- Tell iOS it's a PWA -->
-	<meta name="apple-mobile-web-app-capable" content="yes">
-
-	<title>Smart Copy</title>
-</head>
-
-<body class="d-flex flex-column">
-	<div class="justify-content-center align-items-center">
-		You are Offline.
-	</div>
-</body>
-
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#2457ff" />
+    <title>Smart Copy — Offline</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        color: #101828;
+        background: #f6f8fc;
+        font-family: system-ui, sans-serif;
+      }
+      main {
+        width: min(100%, 520px);
+        padding: 40px;
+        border: 1px solid #dce4f2;
+        border-radius: 24px;
+        background: #fff;
+        box-shadow: 0 20px 60px rgba(16, 24, 40, 0.08);
+      }
+      svg {
+        display: block;
+        width: 56px;
+        height: 56px;
+      }
+      h1 {
+        margin: 24px 0 10px;
+        letter-spacing: -0.04em;
+      }
+      p {
+        margin: 0;
+        color: #526079;
+        line-height: 1.6;
+      }
+      button {
+        min-height: 44px;
+        margin-top: 28px;
+        padding: 0 18px;
+        border: 0;
+        border-radius: 12px;
+        color: #fff;
+        background: #2457ff;
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      button:focus-visible {
+        outline: 3px solid #00a6a6;
+        outline-offset: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <svg viewBox="0 0 64 64" role="img" aria-label="Smart Copy">
+        <rect width="64" height="64" rx="16" fill="#2457ff" />
+        <path
+          d="M22 18h20a4 4 0 0 1 4 4v24H22a4 4 0 0 1-4-4V22a4 4 0 0 1 4-4Z"
+          fill="#fff"
+        />
+        <path
+          d="M26 27h14M26 34h14M26 41h8"
+          stroke="#2457ff"
+          stroke-width="3"
+          stroke-linecap="round"
+        />
+      </svg>
+      <h1>You’re Offline</h1>
+      <p>
+        Your saved app shell is available, but Smart Copy needs a connection to
+        securely load and update snippets.
+      </p>
+      <button type="button" onclick="location.reload()">Try Again</button>
+    </main>
+  </body>
 </html>
