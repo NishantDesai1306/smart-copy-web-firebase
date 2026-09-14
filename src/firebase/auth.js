@@ -16,7 +16,7 @@ import {
   signOut,
   updatePassword,
 } from 'firebase/auth';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, runTransaction } from 'firebase/firestore';
 import { auth, db } from './client';
 import { readStoredThemeMode } from '../utils/themeMode';
 
@@ -49,20 +49,36 @@ async function withPopupOrRedirect(
 
 export async function ensureUserProfile(user, username) {
   const profileRef = doc(db, 'users', user.uid);
-  const snapshot = await getDoc(profileRef);
+  const submittedUsername = username?.trim();
 
-  if (!snapshot.exists()) {
-    await setDoc(profileRef, {
-      email: user.email || '',
-      username:
-        username ||
-        user.displayName ||
-        user.email?.split('@')[0] ||
-        'Smart Copy user',
-      avatarUrl: user.photoURL || '',
-      themeMode: readStoredThemeMode(),
-    });
-  }
+  await runTransaction(db, async (transaction) => {
+    const snapshot = await transaction.get(profileRef);
+
+    if (!snapshot.exists()) {
+      transaction.set(profileRef, {
+        email: user.email || '',
+        username:
+          submittedUsername ||
+          user.displayName ||
+          user.email?.split('@')[0] ||
+          'Smart Copy user',
+        avatarUrl: user.photoURL || '',
+        themeMode: readStoredThemeMode(),
+      });
+      return;
+    }
+
+    // Account creation and the global auth listener can arrive together. The
+    // explicit sign-up name is authoritative if the listener created a
+    // fallback profile first.
+    if (submittedUsername) {
+      transaction.set(
+        profileRef,
+        { username: submittedUsername },
+        { merge: true },
+      );
+    }
+  });
 }
 
 export async function signInWithEmail(email, password) {

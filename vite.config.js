@@ -72,6 +72,51 @@ export default defineConfig({
       },
     }),
   ],
+  build: {
+    rolldownOptions: {
+      output: {
+        codeSplitting: {
+          groups: [
+            {
+              name: 'react-vendor',
+              test: /node_modules[\\/](?:react(?:-dom)?|react-router|scheduler)[\\/]/,
+              priority: 50,
+            },
+            {
+              name: 'firebase-firestore',
+              test: /node_modules[\\/](?:@firebase[\\/]firestore|firebase[\\/]firestore)[\\/]/,
+              priority: 45,
+            },
+            {
+              name: 'firebase-auth',
+              test: /node_modules[\\/](?:@firebase[\\/]auth|firebase[\\/]auth)[\\/]/,
+              priority: 45,
+            },
+            {
+              name: 'firebase-storage',
+              test: /node_modules[\\/](?:@firebase[\\/]storage|firebase[\\/]storage)[\\/]/,
+              priority: 45,
+            },
+            {
+              name: 'firebase-core',
+              test: /node_modules[\\/](?:@firebase|firebase)[\\/]/,
+              priority: 40,
+            },
+            {
+              name: 'mui-vendor',
+              test: /node_modules[\\/](?:@mui|@emotion)[\\/]/,
+              priority: 30,
+            },
+            {
+              name: 'forms-vendor',
+              test: /node_modules[\\/](?:formik|yup|property-expr|tiny-case|toposort)[\\/]/,
+              priority: 20,
+            },
+          ],
+        },
+      },
+    },
+  },
   test: {
     environment: 'jsdom',
     environmentOptions: {

@@ -50,6 +50,7 @@ export default function HomePage() {
               <BrandMark size={42} />
               <Typography
                 sx={{
+                  display: { xs: 'none', sm: 'block' },
                   fontWeight: 790,
                   fontSize: 21,
                   letterSpacing: '-0.035em',
@@ -66,16 +67,35 @@ export default function HomePage() {
                   to="/dashboard"
                   variant="contained"
                   endIcon={<ArrowForwardRoundedIcon />}
+                  sx={{ whiteSpace: 'nowrap' }}
                 >
                   Open Snippets
                 </Button>
               ) : (
                 <>
-                  <Button component={Link} to="/login" color="inherit">
+                  <Button
+                    component={Link}
+                    to="/login"
+                    color="inherit"
+                    sx={{ px: { xs: 1.25, sm: 2.25 }, whiteSpace: 'nowrap' }}
+                  >
                     Sign In
                   </Button>
-                  <Button component={Link} to="/signup" variant="contained">
-                    Get Started
+                  <Button
+                    component={Link}
+                    to="/signup"
+                    variant="contained"
+                    sx={{ px: { xs: 1.5, sm: 2.25 }, whiteSpace: 'nowrap' }}
+                  >
+                    <Box component="span" sx={{ display: { sm: 'none' } }}>
+                      Start
+                    </Box>
+                    <Box
+                      component="span"
+                      sx={{ display: { xs: 'none', sm: 'inline' } }}
+                    >
+                      Get Started
+                    </Box>
                   </Button>
                 </>
               )}

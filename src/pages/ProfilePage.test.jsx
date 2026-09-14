@@ -19,6 +19,9 @@ vi.mock('../contexts/AuthContext', () => ({
 
 vi.mock('../firebase/profile', () => ({
   updateUserProfile: (...args) => updateUserProfile(...args),
+}));
+
+vi.mock('../firebase/avatar', () => ({
   uploadUserAvatar: (...args) => uploadUserAvatar(...args),
 }));
 
